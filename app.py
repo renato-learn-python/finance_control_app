@@ -1,11 +1,7 @@
 import streamlit as st
-#import mysql.connector
-#from mysql.connector import Error
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 from datetime import datetime
-from PIL import Image
-from streamlit_extras.app_logo import add_logo
 
 # Função para criar conexão
 def create_connection():
@@ -227,24 +223,15 @@ elif choice == "Dashboards":
         today_formatted = today.strftime("%d/%m")
         first_day_of_month_formatted = first_day_of_month.strftime("%d/%m")
     # Cria o gráfico de barras
-        fig, ax = plt.subplots(figsize=(8, 1), facecolor='#0E1117')
-        ax.bar(expenses_by_cat['Categoria'], expenses_by_cat['total_cat'], color='white')
-         # Ajuste das cores
-        ax.set_facecolor('#0E1117')  # Fundo preto no eixo
-        ax.bar(expenses_by_cat['Categoria'], expenses_by_cat['total_cat'], color='white')  # Barras em ciano
+        # Bar chart 1: Valor_R$ by Categoria
+        fig1 = px.bar(df, x='Categoria', y='Valor_R$', title='Valor por Categoria')
+        st.plotly_chart(fig1)
         
-        # Configuração de cores para os textos e bordas
-        ax.spines['bottom'].set_color('white')
-        ax.spines['left'].set_color('white')
-        ax.tick_params(axis='x', colors='white')
-        ax.tick_params(axis='y', colors='white')
-        
-        # Configuração de labels e título com cores em branco
-        ax.set_xlabel("Categoria", color='white')
-        ax.set_ylabel("Total de Gastos (R$)", color='white')
-        ax.set_title(f"Total de Gastos por Categoria ({first_day_of_month_formatted} a {today_formatted})",color='white')
-        # Exibe o gráfico no Streamlit
-        st.pyplot(fig)
+        # Bar chart 2: Valor_R$ by Banco
+        fig2 = px.bar(df, x='Banco', y='Valor_R$', title='Valor por Banco')
+        st.plotly_chart(fig2)
+
+
     else:
         st.write("Nenhum gasto encontrado para o mês atual.")
     
