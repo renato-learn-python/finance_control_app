@@ -1,5 +1,5 @@
 import streamlit as st
-import mysql.connector
+#import mysql.connector
 from mysql.connector import Error
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ from streamlit_extras.app_logo import add_logo
 def create_connection():
     connection = None
     try:
-        connection = mysql.connector.connect(
+        connection = st.connection('mysql', type='sql')(
             host = st.secrets.host_name,
             user = st.secrets.user_name,
             password = st.secrets.password_name,
