@@ -19,7 +19,7 @@ def create_connection():
             port = st.secrets.port_name
         )
     except Exception as e:
-    print(f"Error connecting to database: {e}")
+        print(f"Error connecting to database: {e}")
     
     return connection
 
