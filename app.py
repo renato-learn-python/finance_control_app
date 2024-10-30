@@ -224,8 +224,7 @@ elif choice == "Dashboards":
         first_day_of_month_formatted = first_day_of_month.strftime("%d/%m")
         # Cria o gráfico de barras
         # Bar chart 1: Valor_R$ by Categoria
-        fig1 = px.bar(expenses_by_cat, x='Categoria', y='Valor_R$', title='Valor por Categoria')
-        st.plotly_chart(fig1)
+        st.bar_chart(expenses_by_cat.set_index('Categoria'))
 
 
     else:
@@ -239,8 +238,7 @@ elif choice == "Dashboards":
         first_day_of_month_formatted = first_day_of_month.strftime("%d/%m")
         # Cria o gráfico de barras
         # Bar chart 2: Valor_R$ by Banco
-        fig2 = px.bar(df, x='Banco', y='Valor_R$', title='Valor por Banco')
-        st.plotly_chart(fig2)
+        st.bar_chart(expenses_by_bank.set_index('Banco'))
       
     else:
         st.write("Nenhum gasto encontrado para o mês atual.")
