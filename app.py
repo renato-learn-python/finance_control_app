@@ -18,8 +18,10 @@ def create_connection():
             database = st.secrets.database_name,
             port = st.secrets.port_name
         )
+    except Exception as e:
+    print(f"Error connecting to database: {e}")
     
-        return connection
+    return connection
 
 # Funções para manipulação de dados
 def insert_data(connection, data):
