@@ -1,6 +1,6 @@
 import streamlit as st
 #import mysql.connector
-from mysql.connector import Error
+#from mysql.connector import Error
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -18,8 +18,7 @@ def create_connection():
             database = st.secrets.database_name,
             port = st.secrets.port_name
         )
-    except Error as e:
-        st.error(f"Erro: '{e}'")
+    
     return connection
 
 # Funções para manipulação de dados
