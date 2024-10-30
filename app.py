@@ -12,11 +12,11 @@ def create_connection():
     connection = None
     try:
         connection = mysql.connector.connect(
-            host= st.secrets['host_name'],
-            user=st.secrets['user_name'],
-            password = st.secrets['password_name'],
-            database =st.secrets['database_name'],
-            port=st.secrets['port_name']
+            host = st.secrets.host_name,
+            user = st.secrets.user_name,
+            password = st.secrets.password_name,
+            database = st.secrets.database_name,
+            port = st.secrets.port_name
         )
     except Error as e:
         st.error(f"Erro: '{e}'")
