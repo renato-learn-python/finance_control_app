@@ -19,7 +19,7 @@ def create_connection():
             port = st.secrets.port_name
         )
     
-    return connection
+        return connection
 
 # Funções para manipulação de dados
 def insert_data(connection, data):
