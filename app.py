@@ -6,13 +6,7 @@ from datetime import datetime
 def create_connection():
     connection = None
     try:
-        connection = st.connection('mysql', type='sql')(
-            host = st.secrets.host_name,
-            user = st.secrets.user_name,
-            password = st.secrets.password_name,
-            database = st.secrets.database_name,
-            port = st.secrets.port_name
-        )
+        connection = st.experimental_connection('main_db', type='sql')
     except Exception as e:
         print(f"Error connecting to database: {e}")
     
@@ -20,32 +14,20 @@ def create_connection():
 
 # Funções para manipulação de dados
 def insert_data(connection, data):
-    cursor = connection.cursor()
-    query = """
-    INSERT INTO main_db (Log, Data, Descricao, Valor_R$, Banco, Forma_de_pagamento, Categoria)
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """
-    cursor.execute(query, data)
-    connection.commit()
+    insert_func = connection.query('INSERT INTO main_db (Log, Data, Descricao, Valor_R$, Banco, Forma_de_pagamento, Categoria) VALUES (%s, %s, %s, %s, %s, %s, %s)')
+    return st.dataframe(insert_func)
 
 def delete_data(connection, record_id):
-    cursor = connection.cursor()
-    query = "DELETE FROM main_db WHERE `Index` = %s"
-    cursor.execute(query, (record_id,))
-    connection.commit()
+    delete_func = connection.query('DELETE FROM main_db WHERE `Index` = %s')
+    return st.dataframe(delete_func)
 
 def read_data(connection):
-    cursor = connection.cursor()
-    query = "SELECT * FROM main_db"
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return result
+    read_func =  connection.query('SELECT * FROM main_db')
+    return st.dataframe(read_func)
 
 # Função para leitura de dados com filtros
 def get_filtered_data(connection, date_range=None, category=None, min_value=None, max_value=None, bank=None, payment_method=None):
-    query = """
-    SELECT * FROM main_db WHERE 1=1
-    """
+    query1 = "SELECT * FROM main_db WHERE 1=1"
     # Condições dinâmicas baseadas nos filtros preenchidos
     conditions = []
     params = []
@@ -71,12 +53,9 @@ def get_filtered_data(connection, date_range=None, category=None, min_value=None
 
     # Monta a query final com filtros
     if conditions:
-        query += " AND " + " AND ".join(conditions)
-
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(query, params)
-    rows = cursor.fetchall()
-    return pd.DataFrame(rows)
+        query1 += " AND " + " AND ".join(conditions)
+    filter_func = connection.query(query1)
+    return st.dataframe(filter_func)
 
 # Função para exibir dashboard
 def show_dashboard(connection):
@@ -85,49 +64,29 @@ def show_dashboard(connection):
     first_day_of_month = today.replace(day=1)
     
     # Realiza a consulta para somar o valor dos gastos no intervalo
-    query = """
-    SELECT SUM(Valor_R$) as total_gasto
-    FROM main_db
-    WHERE Data BETWEEN %s AND %s
-    """
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(query, (first_day_of_month, today))
-    result = cursor.fetchone()
+    query2 = "SELECT SUM(Valor_R$) as total_gasto FROM main_db WHERE Data BETWEEN %s AND %s"
+    dashboard_func = connection.query(query2)
     
     # Retorna o total dos gastos
-    return result['total_gasto'] if result['total_gasto'] is not None else 0
+    return dashboard_func if dashboard_func is not None else 0
 
 def show_total_banco(connection):
     today = datetime.now()
     first_day_of_month = today.replace(day=1)
     
     # Consulta SQL que agrupa e soma os gastos por banco
-    query = """
-    SELECT Banco, SUM(Valor_R$) as total_gasto
-    FROM main_db
-    WHERE Data BETWEEN %s AND %s
-    GROUP BY Banco
-    """
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(query, (first_day_of_month, today))
-    rows = cursor.fetchall()
-    return pd.DataFrame(rows)
+    query3 = "SELECT Banco, SUM(Valor_R$) as total_gasto FROM main_db WHERE Data BETWEEN %s AND %s GROUP BY Banco"
+    banco_func = connection.query(query3)
+    return st.dataframe(banco_func)
 
 def show_total_cat(connection):
     today = datetime.now()
     first_day_of_month = today.replace(day=1)
     
     # Consulta SQL que agrupa e soma os gastos por categoria
-    query = """
-    SELECT Categoria, SUM(Valor_R$) as total_cat
-    FROM main_db
-    WHERE Data BETWEEN %s AND %s
-    GROUP BY Categoria
-    """
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(query, (first_day_of_month, today))
-    rows = cursor.fetchall()
-    return pd.DataFrame(rows)
+    query4 = "SELECT Categoria, SUM(Valor_R$) as total_cat FROM main_db WHERE Data BETWEEN %s AND %s GROUP BY Categoria"
+    cat_func = connection.query(query4)
+    return st.dataframe(cat_func)
     
 
 
